@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import * as weatherService from "./services/weatherService";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [city, setCity] = useState();
+  const [weather, setWeather] = useState({
+    temp: "",
+    condition: "",
+  });
+
+  const fetchWeather = async (city) => {
+    const weatherData = await weatherService.show(city);
+    setWeather({
+      temp: weatherData.current.temp_f,
+      condition: weatherData.current.condition.text,
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    fetchWeather(city);
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>Weather API</h1>
+      <h3>Current weather: {weather.temp}</h3>
+      <h3>Condition: {weather.condition}</h3>
+      <form onSubmit={handleSubmit}>
+        <input name="city" value={city} onChange={(e) => setCity(e.target.value)} />
+        <button type="submit">Get Weather Data</button>
+      </form>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
